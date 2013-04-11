@@ -1,0 +1,12 @@
+nick="botas"
+channel=gymka
+server=irc.freenode.net
+config=/tmp/irclog
+ 
+[ -n "$1" ] && channel=$1
+[ -n "$2" ] && server=$2
+config="${config}_${channel}"
+ 
+echo "NICK $nick" > $config
+echo "USER $nick +i * :$0" >> $config
+echo "JOIN #$channel" >> $config

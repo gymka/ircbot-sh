@@ -1,17 +1,5 @@
 #!/bin/sh
- 
-nick="blb$$"
-channel=gymka
-server=irc.freenode.net
-config=/tmp/irclog
- 
-[ -n "$1" ] && channel=$1
-[ -n "$2" ] && server=$2
-config="${config}_${channel}"
- 
-echo "NICK $nick" > $config
-echo "USER $nick +i * :$0" >> $config
-echo "JOIN #$channel" >> $config
+. ./config.txt
 
 rss () {
 	wget -q -O ~rss1.txt 'http://www.delfi.lt/rss/feeds/daily.xml' 
@@ -22,7 +10,11 @@ rss () {
 		do
 			echo "PRIVMSG #$channel" :$line >> $config
 		done
-		rm ~rss1.txt
+	rm ~rss1.txt
+}
+
+get_msg () {
+	echo "PRIVMSG #$channel" :$(echo "$1"|sed "s/.*PRIVMSG #.*:\![a-z,0-9]* \(.*\)$/\1/") >> $config
 }
  
 trap "rm -f $config;exit 0" INT TERM EXIT
@@ -31,10 +23,8 @@ tail -f $config | nc $server 6667 | while read MESSAGE
 do
   case "$MESSAGE" in
     PING*) echo "PONG${MESSAGE#PING}" >> $config;;
-    *!test*) echo "${MESSAGE}"|sed "s/.*PRIVMSG #.*:\!wiki \(.*\)/\1/" ;;
-    *!rss*) rss ;;
-    *PRIVMSG*) echo "${MESSAGE}" ;;
-    
+    *!test*) get_msg "${MESSAGE}" ;;
+    *!rss*) rss ;;    
     *) echo "${MESSAGE}";;
   esac
 done
