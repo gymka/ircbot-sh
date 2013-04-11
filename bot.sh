@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 . ./config.txt
 
 rss () {
@@ -14,8 +14,13 @@ rss () {
 }
 
 get_msg () {
-	echo "PRIVMSG #$channel" :$(echo "$1"|sed "s/.*PRIVMSG #.*:\![a-z,0-9]* \(.*\)$/\1/") >> $config
+	echo "PRIVMSG #$channel" :$(echo "$1"|sed "s/.*PRIVMSG #.*:\![a-z,0-9]* \(.*\)$/\1/")
 }
+
+get_nick () {
+	echo "$(echo "${1}"|sed "s/^:\(.*\)!~.*/\1/")" 
+}
+
  
 trap "rm -f $config;exit 0" INT TERM EXIT
  
@@ -23,8 +28,8 @@ tail -f $config | nc $server 6667 | while read MESSAGE
 do
   case "$MESSAGE" in
     PING*) echo "PONG${MESSAGE#PING}" >> $config;;
-    *!test*) get_msg "${MESSAGE}" ;;
-    *!rss*) rss ;;    
+    *!test*) echo $(get_msg "${MESSAGE}") >> $config ;;
+    *!rss*) rss ;; 
     *) echo "${MESSAGE}";;
   esac
 done
