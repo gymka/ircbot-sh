@@ -1,4 +1,4 @@
-akmc-ircbot-sh
+ircbot-sh
 ==============
 komandos: 
 

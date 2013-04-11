@@ -30,6 +30,7 @@ do
     PING*) echo "PONG${MESSAGE#PING}" >> $config;;
     *!test*) echo $(get_msg "${MESSAGE}") >> $config ;;
     *!rss*) rss ;; 
+    *!kill*) echo "PART #channel"  >> $config ;;
     *) echo "${MESSAGE}";;
   esac
 done
