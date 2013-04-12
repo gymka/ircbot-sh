@@ -3,6 +3,7 @@
 
 trl () {
 echo "PRIVMSG #$channel" :"supratau, dirbu" >> $config
+msg=${MESSAGE}
 tempcat=~tempcat_$(echo $RANDOM)
 filehtml=file_$(echo $RANDOM).html
 trlhtml=trl_$(echo $RANDOM).html
@@ -11,9 +12,10 @@ fffhtml=fff_$(echo $RANDOM).html
 ttt=ttt_$(echo $RANDOM)
 urltxt=url_$(echo $RANDOM).txt
 kodastxt="kodas_$(echo $RANDOM).txt"
-torrent_url="$(echo $1|sed "s/.*url=\(.*\);.*/\1/")"
-IMDBNR="$(echo $1|sed "s/.*nr=\(.*\);.*/\1/")"
-imdb_url="http://www.imdb.com/title/$IMDBNR"
+torrent_url="$1"
+IMDBNR="$2"
+vsample="$3"
+ imdb_url="http://www.imdb.com/title/tt$IMDBNR"
 wget  -U "Mozilla/5.0 (X11; Linux x86_64; rv:19.0) Gecko/20100101 Firefox/19.0" -e robots=off -O ${filehtml} $imdb_url
 echo 10
 echo "renkama info iš imdb.com"
@@ -104,7 +106,7 @@ sed -i "s@ss2\.png@${ss2}@g" ${kodastxt}
 sed -i "s@ss3\.png@${ss3}@g" ${kodastxt}
 sed -i "s@ss4\.png@${ss4}@g" ${kodastxt}
 
-if [[ "$vsample" == "true" ]] 
+if [[ "$vsample" == "1" ]] 
 then
 	sed -i 's@sample_vieta@<b>Video sample:</b> <font color="red"><b>Viduje!</b></font>@' ${kodastxt}
 else 
@@ -167,8 +169,7 @@ do
     PING*) echo "PONG${MESSAGE#PING}" >> $config;;
     *!test*) echo $(get_msg "${MESSAGE}") >> $config ;;
     *!rss*) rss ;; 
-    *!trl*) trl "${MESSAGE}" ;;
-    *!kill*) echo "PRIVMSG #$channel" :$(cat ./README.md) >> $config ;;
+    *!trl*) trl $(echo ${MESSAGE}|sed "s/.*PRIVMSG #.*:\![a-z,0-9]* \(.*\)$/\1/") ;;
     *) echo "${MESSAGE}";;
   esac
 done
