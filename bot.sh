@@ -1,29 +1,19 @@
 #!/bin/bash
 . ./config.txt
 
-ttt () {
-	IMDBNR="$2"
-imdb_url="http://www.imdb.com/title/tt$IMDBNR"
-echo "PRIVMSG #$channel" :"arg1=$1 arg2=$2= arg3=testas_ arg4=$imdb_url" >> $config
-
-}
 trl () {
 echo "PRIVMSG #$channel" :"supratau, dirbu" >> $config
-tempcat=~tempcat_$(echo $RANDOM)
 filehtml=file_$(echo $RANDOM).html
 trlhtml=trl_$(echo $RANDOM).html
 trl2html=trl2_$(echo $RANDOM).html
 fffhtml=fff_$(echo $RANDOM).html
 ttt=ttt_$(echo $RANDOM)
 urltxt=url_$(echo $RANDOM).txt
-kodastxt="kodas_$(echo $RANDOM).txt"
+kodastxt=kodas_$(echo $RANDOM).txt
 torrent_url="$1"
 IMDBNR="$2"
 imdb_url="http://www.imdb.com/title/tt$IMDBNR"
-echo "PRIVMSG #$channel" :$imdb_url  >> $config
-wget  -U "Mozilla/5.0 (X11; Linux x86_64; rv:19.0) Gecko/20100101 Firefox/19.0" -e robots=off -O ${filehtml} $imdb_url
-echo 10
-echo "renkama info iš imdb.com"
+wget -U "Mozilla/5.0 (X11; Linux x86_64; rv:19.0) Gecko/20100101 Firefox/19.0" -e robots=off -O ${filehtml} $imdb_url
 desc=$(sed -n 's/<meta name="description" content="\(.*\)" \/>/\1/p' ${filehtml})
 title=$(sed -n "s/<meta property='og:title' content=\"\(.*\)(.*/\1/p" ${filehtml})
 
@@ -42,8 +32,7 @@ creators=$(sed -n '/<h4 class="inline">Creator.*:<\/h4>/,/<\/div>/p' ${filehtml}
 director=$(sed -n '/<h4 class="inline">Director:<\/h4>/,/<\/div>/p' ${filehtml}|sed -n "s/<a href=\"\/name\/.*\" itemprop='url'>\(.*\)<\/a>/ \1/p"|tr '\n' ','|sed 's/,$//;s/^ //'|sed "s/<\/span>//g"|sed "s/, ,/,/g")
 cast=$(sed -n '/<table class="cast_list">/,/<\/table>/p' ${filehtml} | \
 sed -n "s/.*itemprop=[\"']name[\"']>\(.*\)/ \1/p"|tr '\n' ','|sed 's/,$//;s/^ //;s/<\/span>//g')
-echo 20
-echo "pavadinimas ir viršelis"
+
 ##################################################
 #                                                                Torrent.ai                                                             #
 #                                                  Pavadinimas ir viršelis                                                   #
@@ -55,8 +44,7 @@ name=$(sed -n 's/\t//g;s/<div class=\"pavadinimas\">\(.*\)<\/div>/\1/p' ${trlhtm
 cover=$(sed -n 's/\t//g;/<div class=\"pavadinimas\">/,/Kita informacija:/p' ${trlhtml} |sed -n 's/<img src="\(.*\)" w.*/\1/p')
 wget  -U "Mozilla/5.0 (X11; Linux x86_64; rv:19.0) Gecko/20100101 Firefox/19.0" -e robots=off -O ${trl2html} --post-data="imgUrl=${cover}" http://trl.lt/upload.php
 cover_url=$(sed -n 's/.*Tiesioginė nuoroda:.*value=\"\(http:\/\/.*\)\" onclick=.*/\1/p' ${trl2html})
-echo 30
-echo "info iš seeders.lt"
+
 ##################################################
 #                                                                seeders.lt                                                            #
 #                                                 Audio/Video info ir ekranvaizdžiai                             #
@@ -94,7 +82,7 @@ ss4=$(sed -n "4p" ${urltxt})
 ##################################################
 
 
-sed "s@Pavadinimas_sel@${title}@" kodas.txt > ${kodastxt}
+sed "s@Pavadinimas_sel@${title}@" ./kodas.txt > ${kodastxt}
 sed -i "s@virselio_url\.png@${cover_url}@g" ${kodastxt}
 sed -i "s@sukurimo_metai@${reld}@" ${kodastxt}
 sed -i "s@salies_name@${country}@" ${kodastxt}
@@ -141,8 +129,8 @@ then
 else 
 	sed -i "s@youtube_dalis@@" ${kodastxt}
 fi
-
-echo "PRIVMSG #$channel" :$(curl -d text="$(cat $kodastxt)" http://paste.akmc.lt/api/create)  >> $config
+dat=$(wget -qO- --post-data "text=$(cat ${kodastxt})" "http://paste.akmc.lt/api/create")
+echo "PRIVMSG #$channel" :$dat >> $config
 
 rm $tempcat $filehtml $trlhtml $trl2html $fffhtml $ttt $urltxt $kodastxt
 }
@@ -167,17 +155,15 @@ get_nick () {
 	echo "$(echo "${1}"|sed "s/^:\(.*\)!~.*/\1/")" 
 }
 
- 
 trap "rm -f $config;exit 0" INT TERM EXIT
- 
+
 tail -f $config | nc $server 6667 | while read MESSAGE
 do
   case "$MESSAGE" in
     PING*) echo "PONG${MESSAGE#PING}" >> $config;;
     *!test*) echo $(get_msg "${MESSAGE}") >> $config ;;
     *!rss*) rss ;; 
-    *!trl*) trl $(echo ${MESSAGE}|sed "s/.*PRIVMSG #.*:\![a-z,0-9]*\(.*\)$/\1/") ;;
-    *!ttt*) ttt $(echo ${MESSAGE}|sed "s/.*PRIVMSG #.*:\![a-z,0-9]*\(.*\)$/\1/") ;;
+    *!trl*) trl $(echo ${MESSAGE}|sed "s/.*PRIVMSG #.*:\![a-z,0-9]*\(.*\)$/\1/;s/%0D//") ;;
     *) echo "${MESSAGE}";;
   esac
 done
