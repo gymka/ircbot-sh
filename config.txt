@@ -1,4 +1,4 @@
-nick="botas"
+nick="ne_botas"
 channel=gymka
 server=irc.freenode.net
 config=/tmp/irclog

@@ -1,9 +1,14 @@
 #!/bin/bash
 . ./config.txt
 
+ttt () {
+	IMDBNR="$2"
+imdb_url="http://www.imdb.com/title/tt$IMDBNR"
+echo "PRIVMSG #$channel" :"arg1=$1 arg2=$2= arg3=testas_ arg4=$imdb_url" >> $config
+
+}
 trl () {
 echo "PRIVMSG #$channel" :"supratau, dirbu" >> $config
-msg=${MESSAGE}
 tempcat=~tempcat_$(echo $RANDOM)
 filehtml=file_$(echo $RANDOM).html
 trlhtml=trl_$(echo $RANDOM).html
@@ -14,8 +19,8 @@ urltxt=url_$(echo $RANDOM).txt
 kodastxt="kodas_$(echo $RANDOM).txt"
 torrent_url="$1"
 IMDBNR="$2"
-vsample="$3"
- imdb_url="http://www.imdb.com/title/tt$IMDBNR"
+imdb_url="http://www.imdb.com/title/tt$IMDBNR"
+echo "PRIVMSG #$channel" :$imdb_url  >> $config
 wget  -U "Mozilla/5.0 (X11; Linux x86_64; rv:19.0) Gecko/20100101 Firefox/19.0" -e robots=off -O ${filehtml} $imdb_url
 echo 10
 echo "renkama info iš imdb.com"
@@ -138,6 +143,8 @@ else
 fi
 
 echo "PRIVMSG #$channel" :$(curl -d text="$(cat $kodastxt)" http://paste.akmc.lt/api/create)  >> $config
+
+rm $tempcat $filehtml $trlhtml $trl2html $fffhtml $ttt $urltxt $kodastxt
 }
 
 rss () {
@@ -169,7 +176,9 @@ do
     PING*) echo "PONG${MESSAGE#PING}" >> $config;;
     *!test*) echo $(get_msg "${MESSAGE}") >> $config ;;
     *!rss*) rss ;; 
-    *!trl*) trl $(echo ${MESSAGE}|sed "s/.*PRIVMSG #.*:\![a-z,0-9]* \(.*\)$/\1/") ;;
+    *!trl*) trl $(echo ${MESSAGE}|sed "s/.*PRIVMSG #.*:\![a-z,0-9]*\(.*\)$/\1/") ;;
+    *!ttt*) ttt $(echo ${MESSAGE}|sed "s/.*PRIVMSG #.*:\![a-z,0-9]*\(.*\)$/\1/") ;;
     *) echo "${MESSAGE}";;
   esac
 done
+
