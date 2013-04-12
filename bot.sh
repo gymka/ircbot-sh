@@ -163,7 +163,7 @@ do
     PING*) echo "PONG${MESSAGE#PING}" >> $config;;
     *!test*) echo $(get_msg "${MESSAGE}") >> $config ;;
     *!rss*) rss ;; 
-    *!trl*) trl $(echo ${MESSAGE}|sed "s/.*PRIVMSG #.*:\![a-z,0-9]*\(.*\)$/\1/;s/%0D//") ;;
+    *!trl*) trl $(echo ${MESSAGE}|sed "s/.*PRIVMSG #.*:\![a-z,0-9]*\(.*\)$/\1/;s/\n//g;s/\r//g") ;;
     *) echo "${MESSAGE}";;
   esac
 done
