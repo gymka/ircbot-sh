@@ -175,6 +175,16 @@ mess=("Labas, $nick" "Sveikas, $nick" "Labas, $nick, kaip šeima, vaikai?" "Oooo
 	fi
 }
 
+ats () {
+nick=$(echo $1|sed "s/^:\(.*\)!.*/\1/")
+ats=("taip" "žinioj" "tai ne nx" "visiškai pritariu" "AKMC FTW" "labas karve, aš drugelis" ":)" "tu kaip visad..." "juokauji?" "rimtai?" "einu pavalgyt" "prisipažįstu, aš botas" ":(")
+	if [[ $(get_nick ${MESSAGE}) != "ne_botas" ]]
+		then 
+			num=$((RANDOM%13))
+			echo "PRIVMSG #$channel" :${ats[$num]} >> $config
+	fi
+}
+
 trap "rm -f $config;exit 0" INT TERM EXIT
 tail -f $config | nc $server 6667 | while read MESSAGE
 do
@@ -185,6 +195,7 @@ do
 #    *!trl*) trl $(echo ${MESSAGE}|sed "s/.*PRIVMSG #.*:\![a-z,0-9]*\(.*\)$/\1/;s/\n//g;s/\r//g") ;;
     *!part*) kill ;;
     *JOIN*) join "${MESSAGE}" ;;
+    *ne_botas:*) ats "${MESSAGE}" ;;
     *) echo "${MESSAGE}";;
   esac
 done
