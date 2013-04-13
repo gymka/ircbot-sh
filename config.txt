@@ -9,6 +9,5 @@ config="${config}_${channel}"
  
 echo "NICK $nick" > $config
 echo "USER $nick +i * :ne_botas" >> $config
-echo "REALNAME $nick >> $config
 echo "IDENT $nick >> $config
 echo "JOIN #$channel" >> $config

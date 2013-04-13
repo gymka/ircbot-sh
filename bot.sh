@@ -152,19 +152,42 @@ get_msg () {
 }
 
 get_nick () {
-	echo "$(echo "${1}"|sed "s/^:\(.*\)!~.*/\1/")" 
+	echo "$(echo "${1}"|sed "s/.*:\(.*\)\!.*/\1/")" 
+}
+
+kill () {
+	if [[ $(get_nick ${MESSAGE}) == "gymka" ]]
+		then 
+			echo "PART #$channel" >> $config
+			rm -f $config
+			killall -9 bot.sh #taip geriau užsidaro, nei žaidžiant su break :D
+	fi
+		
+}
+
+join () {
+nick=$(echo $1|sed "s/^:\(.*\)!.*/\1/")
+mess=("Labas, $nick" "Sveikas, $nick" "Labas, $nick, kaip šeima, vaikai?" "Oooo senai matytas $nick, kur prapuolęs?" "$nick, meni ką vakar žadėjai?" "Būk pasveikintas $nick!")
+	if [[ $(get_nick ${MESSAGE}) != "ne_botas" ]]
+		then 
+			num=$((RANDOM%5))
+			echo "PRIVMSG #$channel" :${mess[$num]} >> $config
+	fi
 }
 
 trap "rm -f $config;exit 0" INT TERM EXIT
-
 tail -f $config | nc $server 6667 | while read MESSAGE
 do
   case "$MESSAGE" in
     PING*) echo "PONG${MESSAGE#PING}" >> $config;;
     *!test*) echo $(get_msg "${MESSAGE}") >> $config ;;
     *!rss*) rss ;; 
-    *!trl*) trl $(echo ${MESSAGE}|sed "s/.*PRIVMSG #.*:\![a-z,0-9]*\(.*\)$/\1/;s/\n//g;s/\r//g") ;;
+#    *!trl*) trl $(echo ${MESSAGE}|sed "s/.*PRIVMSG #.*:\![a-z,0-9]*\(.*\)$/\1/;s/\n//g;s/\r//g") ;;
+    *!part*) kill ;;
+    *JOIN*) join "${MESSAGE}" ;;
     *) echo "${MESSAGE}";;
   esac
 done
+
+
 
