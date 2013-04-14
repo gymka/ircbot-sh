@@ -1,4 +1,19 @@
 #!/bin/bash
+: 'This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	
+	Copyright (C) 2013 gymka <gymka at archlinux.lt>'
+
 . ./config.txt
 
 trl () {
@@ -155,16 +170,6 @@ get_nick () {
 	echo "$(echo "${1}"|sed "s/.*:\(.*\)\!.*/\1/")" 
 }
 
-kill () {
-	if [[ $(get_nick ${MESSAGE}) == "gymka" ]]
-		then 
-			echo "PART #$channel" >> $config
-			rm -f $config
-			killall -9 bot.sh #taip geriau užsidaro, nei žaidžiant su break :D
-	fi
-		
-}
-
 join () {
 nick=$(echo $1|sed "s/^:\(.*\)!.*/\1/")
 mess=("Labas, $nick" "Sveikas, $nick" "Labas, $nick, kaip šeima, vaikai?" "Oooo senai matytas $nick, kur prapuolęs?" "$nick, meni ką vakar žadėjai?" "Būk pasveikintas $nick!")
@@ -192,8 +197,7 @@ do
     PING*) echo "PONG${MESSAGE#PING}" >> $config;;
     *!test*) echo $(get_msg "${MESSAGE}") >> $config ;;
     *!rss*) rss ;; 
-#    *!trl*) trl $(echo ${MESSAGE}|sed "s/.*PRIVMSG #.*:\![a-z,0-9]*\(.*\)$/\1/;s/\n//g;s/\r//g") ;;
-    *!part*) kill ;;
+#   *!trl*) trl $(echo ${MESSAGE}|sed "s/.*PRIVMSG #.*:\![a-z,0-9]*\(.*\)$/\1/;s/\n//g;s/\r//g") ;;
     *JOIN*) join "${MESSAGE}" ;;
     *ne_botas:*) ats "${MESSAGE}" ;;
     *) echo "${MESSAGE}";;
